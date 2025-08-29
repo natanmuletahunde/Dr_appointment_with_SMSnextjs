@@ -1,0 +1,43 @@
+'use client'
+
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+  } from "@/components/ui/form"
+  import { Input } from "@/components/ui/input"
+import { Control } from "react-hook-form"
+
+interface  CustomProps{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    control:Control<any>
+}
+
+const CustomFormField = ({control}:CustomProps) => {
+  return (
+    <div>
+     <FormField
+          control={control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="shadcn" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+    </div>
+  )
+}
+
+export default CustomFormField
