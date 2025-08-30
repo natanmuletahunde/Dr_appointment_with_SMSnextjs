@@ -7,6 +7,19 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import {Form} from "@/components/ui/form"
 import CustomFormField from "../CustomFormField"
+import { Label } from '@/components/ui/label';
+
+export enum FormFieldType{
+    INPUT= 'input',
+    TEXTAREA='textarea',
+    SELECT='select',
+    CHECKBOX='checkbox',
+    DATE_PICKER='datePicker',
+    SKELETON='skeleton',
+    PHONE_INPUT='phoneInput',
+
+
+}
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -35,7 +48,29 @@ const  PatientForm =()=> {
             <p className="text-dark-700">Schedule your first appointment.</p>
         </section>
            <CustomFormField
+           fieldType={FormFieldType.INPUT}
            control={form.control}
+           name="name"
+           label="Full name"
+           placeholder="piv nati"
+           iconSrc="/assets/icons/user.svg"
+           iconAlt="user"
+           />
+             <CustomFormField
+           fieldType={FormFieldType.INPUT}
+           control={form.control}
+           name="email"
+           label="Email"
+           placeholder="natan@gmail.com"
+           iconSrc="/assets/icons/email.svg"
+           iconAlt="email"
+           />
+             <CustomFormField
+           fieldType={FormFieldType.PHONE_INPUT}
+           control={form.control}
+           name="phone"
+           label="phone number"
+           placeholder="925190-00357560"
            />
         <Button type="submit">Submit</Button>
       </form>
