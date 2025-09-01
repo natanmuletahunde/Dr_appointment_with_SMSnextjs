@@ -14,7 +14,7 @@ import "react-phone-number-input/style.css";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 
- const PatientForm = () => {
+const RegisterForm = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -91,4 +91,4 @@ import SubmitButton from "../SubmitButton";
   );
 };
 
-export default PatientForm;
+export default RegisterForm;
