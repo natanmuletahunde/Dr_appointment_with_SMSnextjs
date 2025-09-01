@@ -1,3 +1,4 @@
+'use server'
 import { ID, Query } from "node-appwrite";
 import { users } from "../appwrite.config";
 export const createUser = async (user: CreateUserParams) => {
@@ -8,7 +9,7 @@ export const createUser = async (user: CreateUserParams) => {
       user.phone,
       undefined,
       user.name
-    );
+    ); 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error && error?.code === 409) {
