@@ -13,14 +13,19 @@ import { UserFormValidation } from "@/lib/validation";
 import "react-phone-number-input/style.css";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
+import { Doctors } from "@/constants";
+import { SelectItem } from "../ui/select";
+import Image from "next/image";
 
- const AppointmentForm = ({
-    userId , patientId,type
- }:{
-    userId:string;
-    patientId:string;
-    type:"create"|"update";
- }) => {
+const AppointmentForm = ({
+  userId,
+  patientId,
+  type,
+}: {
+  userId: string;
+  patientId: string;
+  type: "create" | "cancel";
+}) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,36 +65,45 @@ import SubmitButton from "../SubmitButton";
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
         <section className="mb-12 space-y-4">
           <h1 className="header">New Appointment</h1>
-          <p className="text-dark-700">Request a new Appointment in 10 seconds</p>
+          <p className="text-dark-700">
+            Request a new Appointment in 10 seconds
+          </p>
         </section>
 
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          control={form.control}
-          name="name"
-          label="Full name"
-          placeholder="John Doe"
-          iconSrc="/assets/icons/user.svg"
-          iconAlt="user"
-        />
-
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          control={form.control}
-          name="email"
-          label="Email"
-          placeholder="johndoe@gmail.com"
-          iconSrc="/assets/icons/email.svg"
-          iconAlt="email"
-        />
-
-        <CustomFormField
-          fieldType={FormFieldType.PHONE_INPUT}
-          control={form.control}
-          name="phone"
-          label="Phone number"
-          placeholder="(555) 123-4567"
-        />
+        {type !== "cancel" && (
+          <>
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              control={form.control}
+              name="primaryPhysician"
+              label="Doctor"
+              placeholder="Select a Doctor"
+            >
+              {Doctors.map((doctor, i) => (
+                <SelectItem key={doctor.name + i} value={doctor.name}>
+                  <div className="flex cursor-pointer items-center gap-2">
+                    <Image
+                      src={doctor.image}
+                      width={32}
+                      height={32}
+                      alt="doctor"
+                      className="rounded-full border border-dark-500"
+                    />
+                    <p>{doctor.name}</p>
+                  </div>
+                </SelectItem>
+              ))}
+            </CustomFormField>
+            <CustomFormField
+              fieldType={FormFieldType.DATE_PICKER}
+              control={form.control}
+              name="schedule"
+              label="Expected appointment date"
+              showTimeSelect
+              dateFormat="MM/dd/yyyy  -  h:mm aa"
+            />
+          </>
+        )}
 
         <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>
       </form>
