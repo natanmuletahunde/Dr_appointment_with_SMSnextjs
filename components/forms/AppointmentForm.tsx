@@ -43,11 +43,13 @@ const AppointmentForm = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema as any),
     defaultValues: {
-      primaryPhysician: "",
-      reason: "",
-      note: "",
-      schedule: new Date(),
-      cancellationReason: "",
+        primaryPhysician: appointment ? appointment?.primaryPhysician : "",
+        schedule: appointment
+          ? new Date(appointment?.schedule!)
+          : new Date(Date.now()),
+        reason: appointment ? appointment.reason : "",
+        note: appointment?.note || "",
+        cancellationReason: appointment?.cancellationReason || "",
     },
   });
 
@@ -133,12 +135,12 @@ const AppointmentForm = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
-        <section className="mb-12 space-y-4">
+        {type === 'create' && <section className="mb-12 space-y-4">
           <h1 className="header">New Appointment</h1>
           <p className="text-dark-700">
             Request a new Appointment in 10 seconds
           </p>
-        </section>
+        </section> }
 
         {type !== "cancel" && (
           <>
