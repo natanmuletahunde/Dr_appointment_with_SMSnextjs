@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="Screenshot (683)" src="https://github.com/user-attachments/assets/2967c3f7-0d8e-49ea-87a6-b39c45de00d0" /># 🩺 CarePulse – Doctor Appointment Platform  
+ 🩺 CarePulse – Doctor Appointment Platform  
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)  
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0ea5e9?style=for-the-badge&logo=tailwind-css&logoColor=white)  
@@ -31,6 +31,13 @@
 - **Error Tracking**: [Sentry](https://sentry.io)  
 - **Deployment**: [Vercel](https://vercel.com)  
 
+
+## 🛠️ Getting Started  
+
+Clone the repo:  
+git clone https://github.com/your-username/dr-appointment-platform.git
+cd dr-appointment-platform
+
 ---
 📸 Screenshots
 
@@ -42,14 +49,9 @@
 <img width="1920" height="1080" alt="Screenshot (688)" src="https://github.com/user-attachments/assets/392be2d4-6e48-4bb5-bf8f-f18cd34564e3" />
 <img width="1920" height="1080" alt="Screenshot (689)" src="https://github.com/user-attachments/assets/0e07f776-4a80-402f-983f-a09a0ff46a3e" />
 <img width="1920" height="1080" alt="Screenshot (690)" src="https://github.com/user-attachments/assets/0dbd0174-4453-48f9-bfb8-10933ddae67d" />
-
-## 🛠️ Getting Started  
-
-Clone the repo:  
+<img width="1920" height="1080" alt="Screenshot (683)" src="https://github.com/user-attachments/assets/2967c3f7-0d8e-49ea-87a6-b39c45de00d0" />
 
 ```bash
-git clone https://github.com/your-username/dr-appointment-platform.git
-cd dr-appointment-platform
 Install dependencies:
 npm install
 # or
