@@ -40,8 +40,10 @@ import SubmitButton from "../SubmitButton";
       const newUser = await createUser(user);
 
       if (newUser) {
+        console.log(newUser)
         router.push(`/patients/${newUser.$id}/register`);
       }
+
     } catch (error) {
       console.log(error);
     }
