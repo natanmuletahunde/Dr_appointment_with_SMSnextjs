@@ -1,5 +1,6 @@
 export type DateInput = Date | string | number;
 
+// Normalizes common date inputs into a readable label.
 export function formatDate(
     input: DateInput,
     options: Intl.DateTimeFormatOptions = {
@@ -28,6 +29,7 @@ export function toTitleCase(value: string): string {
 export function buildQueryString(
     params: Record<string, string | number | boolean | null | undefined>,
 ): string {
+    // Skip null/undefined values to avoid noisy query strings.
     const entries = Object.entries(params).filter(([, value]) => value != null);
     if (entries.length === 0) {
         return "";
