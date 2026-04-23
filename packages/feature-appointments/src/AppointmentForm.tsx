@@ -21,16 +21,22 @@ export function AppointmentForm({ onSubmit }: AppointmentFormProps) {
 
     const previewDate = date ? formatDate(date) : "Pick a date";
 
+    const resetForm = () => {
+        setPatientName("");
+        setDate("");
+        setTime("");
+        setReason("");
+    };
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        onSubmit?.({ patientName, date, time, reason });
+        resetForm();
+    };
+
     return (
         <Card title="Book appointment">
-            <form
-                className="space-y-3"
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    onSubmit?.({ patientName, date, time, reason });
-                    setReason("");
-                }}
-            >
+            <form className="space-y-3" onSubmit={handleSubmit}>
                 <Input
                     value={patientName}
                     onChange={(event) => setPatientName(event.target.value)}

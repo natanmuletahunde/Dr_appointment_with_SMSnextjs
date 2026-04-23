@@ -22,25 +22,30 @@ export function AppointmentDemo() {
         },
     ]);
 
+    const handleAddAppointment = (data: {
+        patientName: string;
+        date: string;
+        time: string;
+        reason: string;
+    }) => {
+        setAppointments((current) => [
+            ...current,
+            {
+                patientName: data.patientName,
+                date: data.date,
+                time: data.time,
+                status: "Booked",
+            },
+        ]);
+    };
+
     return (
         <div className="space-y-4">
             <SectionTitle
                 title="Appointments"
                 subtitle="Book and preview upcoming appointments"
             />
-            <AppointmentForm
-                onSubmit={(data) =>
-                    setAppointments((current) => [
-                        ...current,
-                        {
-                            patientName: data.patientName,
-                            date: data.date,
-                            time: data.time,
-                            status: "Booked",
-                        },
-                    ])
-                }
-            />
+            <AppointmentForm onSubmit={handleAddAppointment} />
             <div className="space-y-3">
                 {appointments.map((appointment, index) => (
                     <AppointmentSummary key={index} {...appointment} />
