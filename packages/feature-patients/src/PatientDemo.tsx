@@ -20,24 +20,28 @@ export function PatientDemo() {
         },
     ]);
 
+    const handleAddPatient = (data: {
+        name: string;
+        email: string;
+        phone: string;
+    }) => {
+        setPatients((current) => [
+            ...current,
+            {
+                id: `patient-${current.length + 1}`,
+                name: data.name,
+                email: data.email,
+            },
+        ]);
+    };
+
     return (
         <div className="space-y-4">
             <SectionTitle
                 title="Patients"
                 subtitle="Register and review patient records"
             />
-            <PatientRegistrationForm
-                onSubmit={(data) =>
-                    setPatients((current) => [
-                        ...current,
-                        {
-                            id: `patient-${current.length + 1}`,
-                            name: data.name,
-                            email: data.email,
-                        },
-                    ])
-                }
-            />
+            <PatientRegistrationForm onSubmit={handleAddPatient} />
             <PatientList patients={patients} />
         </div>
     );

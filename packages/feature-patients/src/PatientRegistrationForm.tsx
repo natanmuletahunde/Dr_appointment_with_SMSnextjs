@@ -15,19 +15,18 @@ export function PatientRegistrationForm({
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        onSubmit?.({
+            name: toTitleCase(name),
+            email,
+            phone,
+        });
+    };
+
     return (
         <Card title="Register patient">
-            <form
-                className="space-y-3"
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    onSubmit?.({
-                        name: toTitleCase(name),
-                        email,
-                        phone,
-                    });
-                }}
-            >
+            <form className="space-y-3" onSubmit={handleSubmit}>
                 <Input
                     value={name}
                     onChange={(event) => setName(event.target.value)}
