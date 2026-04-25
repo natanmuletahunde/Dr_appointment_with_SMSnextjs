@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/piv-org/dr_appointment",
+      "type": "http"
+    }
+  }
+}
