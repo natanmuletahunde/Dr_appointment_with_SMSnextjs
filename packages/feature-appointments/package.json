@@ -1,0 +1,16 @@
+{
+    "name": "feature-appointments",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "dependencies": {
+        "ui-components": "file:../ui-components",
+        "utils": "file:../utils"
+    },
+    "peerDependencies": {
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+    }
+}
