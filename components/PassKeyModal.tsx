@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 
 import {
   AlertDialog,
@@ -18,14 +18,19 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { loginAdminWithPasskey } from "@/lib/actions/auth.actions";
 import { decryptKey, encryptKey } from "@/lib/utils";
 
 export const PasskeyModal = () => {
   const router = useRouter();
   const path = usePathname();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get("next") || "/admin";
+
   const [open, setOpen] = useState(false);
   const [passkey, setPasskey] = useState("");
   const [error, setError] = useState("");
+  const [pending, startTransition] = useTransition();
 
   const encryptedKey =
     typeof window !== "undefined"
@@ -35,14 +40,18 @@ export const PasskeyModal = () => {
   useEffect(() => {
     const accessKey = encryptedKey && decryptKey(encryptedKey);
 
-    if (path)
-      if (accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
-        setOpen(false);
-        router.push("/admin");
-      } else {
-        setOpen(true);
-      }
-  }, [encryptedKey]);
+    if (!path) return;
+
+    if (accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
+      setOpen(false);
+      startTransition(async () => {
+        await loginAdminWithPasskey(accessKey);
+        router.push(nextPath);
+      });
+    } else {
+      setOpen(true);
+    }
+  }, [encryptedKey, nextPath, path, router]);
 
   const closeModal = () => {
     setOpen(false);
@@ -53,16 +62,25 @@ export const PasskeyModal = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+    setError("");
 
-    if (passkey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-      const encryptedKey = encryptKey(passkey);
-
-      localStorage.setItem("accessKey", encryptedKey);
-
-      setOpen(false);
-    } else {
+    if (passkey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
       setError("Invalid passkey. Please try again.");
+      return;
     }
+
+    const encrypted = encryptKey(passkey);
+    localStorage.setItem("accessKey", encrypted);
+
+    startTransition(async () => {
+      const result = await loginAdminWithPasskey(passkey);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setOpen(false);
+      router.push(nextPath);
+    });
   };
 
   return (
@@ -110,8 +128,9 @@ export const PasskeyModal = () => {
           <AlertDialogAction
             onClick={(e) => validatePasskey(e)}
             className="shad-primary-btn w-full"
+            disabled={pending}
           >
-            Enter Admin Passkey
+            {pending ? "Verifying…" : "Enter Admin Passkey"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

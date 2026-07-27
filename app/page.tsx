@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Suspense } from "react";
 import PatientForm from "@/components/forms/PatientForm";
 import Link from "next/link";
 import { PasskeyModal } from "@/components/PassKeyModal";
@@ -8,7 +9,11 @@ const Home = ({ searchParams }: SearchParamProps) => {
 
   return (
     <div className="flex h-screen max-h-screen">
-      {isAdmin && <PasskeyModal />}
+      {isAdmin && (
+        <Suspense fallback={null}>
+          <PasskeyModal />
+        </Suspense>
+      )}
 
       <section className="remove-scrollbar container my-auto">
         <div className="sub-container max-w-[496px]">

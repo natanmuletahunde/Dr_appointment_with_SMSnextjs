@@ -1,6 +1,6 @@
 "use server";
 
-import { ID } from "node-appwrite";
+import { Query } from "node-appwrite";
 import {
   BUCKET_ID,
   DATABASE_ID,
@@ -13,26 +13,51 @@ import {
 } from "../appwrite.config";
 import { parseStringify } from "../utils";
 import { InputFile } from "node-appwrite/file";
+import { ID } from "node-appwrite";
+import { createPatientSession } from "@/lib/auth/session";
+import { emitEvent } from "@/lib/events/bus";
+import { registerDomainEventHandlers } from "@/lib/events/handlers";
+import { logger } from "@/lib/logger";
+import { randomBytes } from "crypto";
+
+registerDomainEventHandlers();
+
+function generateTempPassword(): string {
+  return `Cp!${randomBytes(12).toString("base64url")}`;
+}
 
 export const createUser = async (user: CreateUserParams) => {
   try {
     const newUser = await users.create(
       ID.unique(),
       user.email,
-      undefined, // phone (skip if not using phone-based accounts)
-      "StrongPassword123!", // ⚠️ Appwrite requires password
+      undefined,
+      generateTempPassword(),
       user.name
     );
 
-    return newUser; // ✅ return document
+    await createPatientSession({
+      userId: newUser.$id,
+      name: user.name,
+      email: user.email,
+    });
+
+    return newUser;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.code === 409) {
-      const documents = await users.list();
-      const existingUser = documents.users.find((u) => u.email === user.email);
+      const documents = await users.list([Query.equal("email", [user.email])]);
+      const existingUser = documents.users[0];
+      if (existingUser) {
+        await createPatientSession({
+          userId: existingUser.$id,
+          name: existingUser.name,
+          email: existingUser.email,
+        });
+      }
       return existingUser || null;
     }
-    console.error("Error creating user:", error);
+    logger.error("user.create.failed", { error: String(error) });
     return null;
   }
 };
@@ -42,7 +67,7 @@ export const getUser = async (userId: string) => {
     const user = await users.get(userId);
     return parseStringify(user);
   } catch (error) {
-    console.log(error);
+    logger.error("user.get.failed", { userId, error: String(error) });
   }
 };
 
@@ -78,9 +103,15 @@ export const registerPatient = async ({
       }
     );
 
+    await emitEvent("patient.registered", {
+      userId: patient.userId,
+      patientId: newPatient.$id,
+      name: patient.name,
+    });
+
     return parseStringify(newPatient);
   } catch (error) {
-    console.error("An error occurred while creating a new patient:", error);
+    logger.error("patient.register.failed", { error: String(error) });
   }
 };
 
@@ -89,13 +120,51 @@ export const getPatient = async (userId: string) => {
     const patients = await databases.listDocuments(
       DATABASE_ID!,
       PATIENT_COLLECTION_ID!,
-      [ /* filtering by userId works if you have a `userId` attribute in schema */ ]
+      [Query.equal("userId", [userId]), Query.limit(1)]
     );
 
     return patients.documents.length > 0
       ? parseStringify(patients.documents[0])
       : null;
   } catch (error) {
-    console.error("An error occurred while retrieving the patient details:", error);
+    logger.error("patient.get.failed", { userId, error: String(error) });
+  }
+};
+
+export const updatePatientProfile = async (
+  patientId: string,
+  patch: Record<string, unknown>
+) => {
+  try {
+    const updated = await databases.updateDocument(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      patientId,
+      patch
+    );
+    return parseStringify(updated);
+  } catch (error) {
+    logger.error("patient.update.failed", { patientId, error: String(error) });
+  }
+};
+
+export const searchPatients = async (query: string, limit = 20) => {
+  try {
+    const patients = await databases.listDocuments(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      [
+        Query.or([
+          Query.search("name", query),
+          Query.search("email", query),
+          Query.search("phone", query),
+        ]),
+        Query.limit(limit),
+      ]
+    );
+    return parseStringify(patients.documents);
+  } catch (error) {
+    logger.error("patient.search.failed", { query, error: String(error) });
+    return [];
   }
 };
